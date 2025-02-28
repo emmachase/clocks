@@ -1,15 +1,37 @@
-import { Button } from "@/components/ui/button"
 import Clocks from "@/components/Clocks"
 import Timelines from "./components/Timelines";
 import { useId, useMemo, useRef, useState } from "react";
 import World from "@/assets/Equirectangular_projection_world_map_without_borders.svg?react"
-import AutoSizer from "./components/AutoSizer";
 import { useRealTime } from "./hooks/useRealTime";
 import { Switch } from "./components/ui/switch";
 import { Label } from "./components/ui/label";
 import DayNightTerminator from "./components/DayNightTerminator";
 import { Calendar } from "./components/ui/calendar";
 import { isSameDay } from "date-fns";
+import CityMarkers from "./components/CityMarkers";
+
+import cityMapList from "@/assets/cityMap.json";
+
+interface City {
+  city: string;
+  city_ascii: string;
+  lat: number;
+  lng: number;
+  pop: number;
+  country: string;
+  iso2: string;
+  iso3: string;
+  province: string;
+  timezone: string;
+}
+
+const cityList: City[] = cityMapList;
+
+type CityName = string;
+const cityMap = cityList.reduce((acc, city) => {
+  acc[city.city] = city;
+  return acc;
+}, {} as Record<CityName, City>);
 
 function useStableDate(date: Date) {
   const dateRef = useRef<Date>(date);
@@ -21,18 +43,47 @@ function useStableDate(date: Date) {
   return dateRef.current;
 }
 
+function getCity(city: string, country: string, province: string) {
+  return cityList.find(c => 
+    c.city === city &&
+    c.country === country &&
+    c.province === province
+  );
+}
+
 function App() {
   // Example list of timezones
-  const timezones = [
-    "America/Los_Angeles",
-    "UTC",
-    "America/New_York",
-    "Europe/London",
-    "Asia/Tokyo",
-    "Australia/Sydney",
-    "Pacific/Auckland",
-    "Europe/Paris",
-  ];
+  // const timezones = [
+  //   "America/Los_Angeles",
+  //   "UTC",
+  //   "America/New_York",
+  //   "Europe/London",
+  //   "Asia/Tokyo",
+  //   "Australia/Sydney",
+  //   "Pacific/Auckland",
+  //   "Europe/Paris",
+  // ];
+
+  const cities = [
+    getCity("Seattle", "United States of America", "Washington"),
+    getCity("Los Angeles", "United States of America", "California"),
+    getCity("New York", "United States of America", "New York"),
+    getCity("London", "United Kingdom", "Westminster"),
+    getCity("Tokyo", "Japan", "Tokyo"),
+    getCity("Sydney", "Australia", "New South Wales"),
+    getCity("New Delhi", "India", "Delhi"),
+  ]
+
+  const timezones = ["UTC", ...new Set(cities.map(city => city?.timezone ?? city?.city ?? ""))];
+
+  console.log(timezones);
+
+  // const citiesByTimezone = useMemo(() => {
+  //   return timezones.map(timezone => {
+  //     const city = cityList.find(city => city.timezone === timezone);
+  //     return city;
+  //   }).filter(city => city !== undefined);
+  // }, [timezones]);
 
   const realTime = useRealTime();
 
@@ -107,16 +158,24 @@ function App() {
           <World className="fill-primary/20 w-auto h-[50vh]" /> 
           {/* aspect ratio: 2:1 */}
           <div className="absolute inset-0 h-[50vh]">
-                <DayNightTerminator
-                  width={720}
-                  height={360}
-                  className="w-full h-[50vh]"
-                  time={displayRealTime ? realTime : centerTime}
-                  fillColor="#000"
-                  fillOpacity={0.2}
-                  strokeColor="#555"
-                  strokeWidth={1}
-                />
+            <DayNightTerminator
+              width={720}
+              height={360}
+              className="w-full h-[50vh]"
+              time={displayRealTime ? realTime : centerTime}
+              fillColor="#000"
+              fillOpacity={0.2}
+              strokeColor="#555"
+              strokeWidth={1}
+            />
+          </div>
+          <div className="absolute inset-0">
+            <CityMarkers
+              width={720}
+              height={360}
+              className="w-full h-[50vh]"
+              cities={cities}
+            />
           </div>
         </div>
 
