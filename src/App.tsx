@@ -2,7 +2,9 @@ import { Button } from "@/components/ui/button"
 import Clocks from "@/components/Clocks"
 import Timelines from "./components/Timelines";
 import { useState } from "react";
-import World from "@/assets/world.svg?react"
+import World from "@/assets/BlankMap-World-Equirectangular.svg?react"
+import AutoSizerExample from "./components/AutoSizerExample";
+import AutoSizer from "./components/AutoSizer";
 
 function App() {
   // Example list of timezones
@@ -26,7 +28,12 @@ function App() {
       <Clocks timezones={timezones} />
       
       <div className="flex items-center justify-center">
-        <World className="fill-primary/20" />
+        {/* <AutoSizer>
+          {({ width, height }) => (
+            
+          )}
+        </AutoSizer> */}
+        {/* <World className="fill-primary/20 w-full h-[70vh]" preserveAspectRatio="none"/> */}
       </div>
 
       <Timelines 
@@ -36,6 +43,11 @@ function App() {
         windowSize={windowSize}
         onWindowSizeChange={setWindowSize}
       />
+      
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold mb-4">AutoSizer Examples</h2>
+        <AutoSizerExample />
+      </div>
     </div>
   )
 }
