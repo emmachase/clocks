@@ -127,9 +127,9 @@ function App() {
             checked={displayRealTime}
             onCheckedChange={(enabled) => {
               setDisplayRealTime(enabled);
+              setCenterTime(realTime);
               if (enabled) {
                 setCalendarMonth(realTime);
-                setCenterTime(realTime);
               }
             }}
           />
