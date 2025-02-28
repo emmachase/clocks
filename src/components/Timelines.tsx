@@ -1,13 +1,14 @@
 import { cn } from '@/lib/utils';
 import { TZDate } from '@date-fns/tz';
 import { addHours, differenceInMilliseconds, startOfDay, subHours } from 'date-fns';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState, useEffect } from 'react';
 
 interface TimezonesProps {
   timezones: string[];
   windowSize: number; // in hours
   centerTime: Date;
   onCenterTimeChange: (time: Date) => void;
+  onWindowSizeChange?: (size: number) => void;
 }
 
 const typeToColor: Record<string, string> = {
@@ -69,7 +70,13 @@ const dayStates = [
 //   return getMillisecondsUntilNextStateChange(time) / (1000 * 60 * 60);
 // }
 
-export default function Timelines({ timezones, windowSize, centerTime, onCenterTimeChange }: TimezonesProps) {
+export default function Timelines({ 
+  timezones, 
+  windowSize, 
+  centerTime, 
+  onCenterTimeChange,
+  onWindowSizeChange 
+}: TimezonesProps) {
   const [isDragging, setIsDragging] = useState(false);
   const dragStartXRef = useRef<number | null>(null);
   const dragStartTimeRef = useRef<Date | null>(null);
@@ -115,6 +122,37 @@ export default function Timelines({ timezones, windowSize, centerTime, onCenterT
       dragStartTimeRef.current = null;
     }
   }, [isDragging]);
+
+  const handleWheel = useCallback((e: WheelEvent) => {
+    e.preventDefault();
+    
+    if (!onWindowSizeChange) return;
+    
+    // Determine zoom direction and factor
+    const zoomFactor = e.deltaY > 0 ? 1.1 : 0.9; // Zoom out (increase window) or zoom in (decrease window)
+    
+    // Calculate new window size with limits
+    const newWindowSize = Math.max(2, Math.min(48, windowSize * zoomFactor));
+    
+    // Only update if there's a meaningful change
+    if (Math.abs(newWindowSize - windowSize) > 0.1) {
+      onWindowSizeChange(newWindowSize);
+    }
+  }, [windowSize, onWindowSizeChange]);
+
+  // Add non-passive wheel event listener to ensure preventDefault works
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    // Add wheel event listener with passive: false to ensure preventDefault works
+    container.addEventListener('wheel', handleWheel, { passive: false });
+    
+    // Clean up the event listener on unmount
+    return () => {
+      container.removeEventListener('wheel', handleWheel);
+    };
+  }, [handleWheel]);
 
   return (
     <div 

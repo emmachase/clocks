@@ -18,6 +18,7 @@ function App() {
   ];
 
   const [centerTime, setCenterTime] = useState<Date>(new Date());
+  const [windowSize, setWindowSize] = useState<number>(12);
 
   return (
     <div className="mx-auto p-4 space-y-4">
@@ -32,7 +33,8 @@ function App() {
         timezones={timezones} 
         centerTime={centerTime}
         onCenterTimeChange={setCenterTime}
-        windowSize={12}
+        windowSize={windowSize}
+        onWindowSizeChange={setWindowSize}
       />
     </div>
   )
