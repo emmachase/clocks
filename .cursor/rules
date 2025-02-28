@@ -1,0 +1,5 @@
+- Never make examples unless explicitly asked by the user.
+- Write idiomatic React code.
+- Never use any external libraries unless explicitly asked by the user.
+- Use Tailwind CSS for styling.
+- Use TypeScript.

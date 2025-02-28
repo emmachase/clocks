@@ -75,8 +75,10 @@ export default function Timelines({
   windowSize, 
   centerTime, 
   onCenterTimeChange,
-  onWindowSizeChange 
-}: TimezonesProps) {
+  onWindowSizeChange,
+  className,
+  ...props
+}: TimezonesProps & React.HTMLProps<HTMLDivElement>) {
   const [isDragging, setIsDragging] = useState(false);
   const dragStartXRef = useRef<number | null>(null);
   const dragStartTimeRef = useRef<Date | null>(null);
@@ -156,7 +158,8 @@ export default function Timelines({
 
   return (
     <div 
-      className="relative space-y-2"
+      {...props}
+      className={cn("relative space-y-2", className)}
       ref={containerRef}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
@@ -197,7 +200,7 @@ export default function Timelines({
 
         return (
           <div key={timezone} className="rounded-sm bg-secondary shadow-sm flex overflow-hidden">
-            <div className="py-1 px-2 text-xs font-bold w-[150px]">{timezone}</div>
+            <div className="py-2 px-2 text-xs font-bold w-[150px]">{timezone}</div>
 
             <div className="overflow-hidden relative flex-1">
               <div className="flex h-full" style={{transform: `translateX(${(diffPct * 100)/scale}%)`, width: `${scale * 100}%`}}>
