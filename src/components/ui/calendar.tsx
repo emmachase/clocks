@@ -64,7 +64,7 @@ function Calendar({
         IconRight: ({ className, ...props }) => (
           <ChevronRight className={cn("size-4", className)} {...props} />
         ),
-        Day: ({ date, displayMonth, ...props }) => {
+        Day: ({ date, displayMonth }) => {
           const buttonRef = useRef<HTMLButtonElement>(null) as React.RefObject<HTMLButtonElement>;
           const stuff = useDayRender(date, displayMonth, buttonRef);
 

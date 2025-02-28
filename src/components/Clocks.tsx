@@ -1,7 +1,5 @@
-import { useRealTime } from '@/hooks/useRealTime';
 import { format } from 'date-fns';
 import { TZDate } from '@date-fns/tz';
-import { cn } from '@/lib/utils';
 
 function isPM(date: Date) {
   return date.getHours() >= 12;

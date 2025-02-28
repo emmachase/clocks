@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import { TZDate } from '@date-fns/tz';
-import { addHours, differenceInMilliseconds, startOfDay, subHours } from 'date-fns';
+import { differenceInMilliseconds, startOfDay, subHours } from 'date-fns';
 import { useCallback, useRef, useState, useEffect } from 'react';
 
 interface TimezonesProps {

@@ -27,12 +27,6 @@ interface City {
 
 const cityList: City[] = cityMapList;
 
-type CityName = string;
-const cityMap = cityList.reduce((acc, city) => {
-  acc[city.city] = city;
-  return acc;
-}, {} as Record<CityName, City>);
-
 function useStableDate(date: Date) {
   const dateRef = useRef<Date>(date);
   
