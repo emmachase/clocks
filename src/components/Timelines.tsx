@@ -280,10 +280,10 @@ export default function Timelines({
         })
 
         return (
-          <div key={timezone} className="rounded-sm bg-secondary shadow-sm flex overflow-hidden">
+          <div key={timezone} className="rounded-sm bg-secondary shadow-sm flex overflow-hidden flex-col md:flex-row">
             <div className="py-2 px-2 text-xs font-bold w-[150px]">{timezone}</div>
 
-            <div className="overflow-hidden relative flex-1">
+            <div className="overflow-hidden relative md:flex-1 h-8 md:h-[unset]">
               <div className="flex h-full" style={{transform: `translateX(${(diffPct * 100)/scale}%)`, width: `${scale * 100}%`}}>
                 {day}
               </div>
