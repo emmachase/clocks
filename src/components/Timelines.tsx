@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils';
 import { TZDate } from '@date-fns/tz';
 import { addHours, differenceInMilliseconds, startOfDay, subHours } from 'date-fns';
+import { useCallback, useRef, useState } from 'react';
 
 interface TimezonesProps {
   timezones: string[];
@@ -68,11 +69,63 @@ const dayStates = [
 //   return getMillisecondsUntilNextStateChange(time) / (1000 * 60 * 60);
 // }
 
-export default function Timelines({ timezones, windowSize, centerTime }: TimezonesProps) {
+export default function Timelines({ timezones, windowSize, centerTime, onCenterTimeChange }: TimezonesProps) {
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartXRef = useRef<number | null>(null);
+  const dragStartTimeRef = useRef<Date | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    setIsDragging(true);
+    dragStartXRef.current = e.clientX;
+    dragStartTimeRef.current = new Date(centerTime);
+    
+    // Prevent text selection during drag
+    e.preventDefault();
+  }, [centerTime]);
+  
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!isDragging || dragStartXRef.current === null || dragStartTimeRef.current === null || !containerRef.current) {
+      return;
+    }
+    
+    const containerWidth = containerRef.current.getBoundingClientRect().width;
+    const deltaX = e.clientX - dragStartXRef.current;
+    const deltaRatio = deltaX / containerWidth;
+    
+    // Calculate time adjustment based on drag distance
+    // Negative deltaX (drag left) moves time forward, positive deltaX (drag right) moves time backward
+    const hoursDelta = -deltaRatio * windowSize;
+    const newCenterTime = new Date(dragStartTimeRef.current);
+    newCenterTime.setTime(newCenterTime.getTime() + hoursDelta * 60 * 60 * 1000);
+    
+    onCenterTimeChange(newCenterTime);
+  }, [isDragging, windowSize, onCenterTimeChange]);
+  
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+    dragStartXRef.current = null;
+    dragStartTimeRef.current = null;
+  }, []);
+  
+  const handleMouseLeave = useCallback(() => {
+    if (isDragging) {
+      setIsDragging(false);
+      dragStartXRef.current = null;
+      dragStartTimeRef.current = null;
+    }
+  }, [isDragging]);
 
   return (
-    <div className="relative space-y-2">
+    <div 
+      className="relative space-y-2"
+      ref={containerRef}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseLeave}
+      style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+    >
       {timezones.map((timezone) => {
         const localCenterTime = new TZDate(centerTime, timezone);
         const dayStart = startOfDay(localCenterTime);

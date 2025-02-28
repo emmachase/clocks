@@ -5,5 +5,11 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 import svgr from 'vite-plugin-svgr'
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(), tsconfigPaths(), svgr()],
+  plugins: [react(({
+    babel: {
+      plugins: [
+        ["babel-plugin-react-compiler", {}]
+      ]
+    }
+  })), tailwindcss(), tsconfigPaths(), svgr()],
 })
