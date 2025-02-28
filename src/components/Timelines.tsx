@@ -83,6 +83,7 @@ export default function Timelines({
   const dragStartXRef = useRef<number | null>(null);
   const dragStartTimeRef = useRef<Date | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const lastTouchDistanceRef = useRef<number | null>(null);
   
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     setIsDragging(true);
@@ -125,6 +126,75 @@ export default function Timelines({
     }
   }, [isDragging]);
 
+  // Touch event handlers for mobile support
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      // Single touch - handle as drag
+      setIsDragging(true);
+      dragStartXRef.current = e.touches[0].clientX;
+      dragStartTimeRef.current = new Date(centerTime);
+    } else if (e.touches.length === 2 && onWindowSizeChange) {
+      // Two touches - prepare for pinch zoom
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const distance = Math.hypot(
+        touch2.clientX - touch1.clientX,
+        touch2.clientY - touch1.clientY
+      );
+      lastTouchDistanceRef.current = distance;
+    }
+  }, [centerTime, onWindowSizeChange]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    // Don't call preventDefault here as we're handling it in the passive event listener
+    
+    if (e.touches.length === 1 && isDragging && dragStartXRef.current !== null && dragStartTimeRef.current !== null && containerRef.current) {
+      // Handle single touch drag
+      const containerWidth = containerRef.current.getBoundingClientRect().width;
+      const deltaX = e.touches[0].clientX - dragStartXRef.current;
+      const deltaRatio = deltaX / containerWidth;
+      
+      // Calculate time adjustment based on drag distance
+      const hoursDelta = -deltaRatio * windowSize;
+      const newCenterTime = new Date(dragStartTimeRef.current);
+      newCenterTime.setTime(newCenterTime.getTime() + hoursDelta * 60 * 60 * 1000);
+      
+      onCenterTimeChange(newCenterTime);
+    } else if (e.touches.length === 2 && onWindowSizeChange && lastTouchDistanceRef.current !== null) {
+      // Handle pinch zoom
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const newDistance = Math.hypot(
+        touch2.clientX - touch1.clientX,
+        touch2.clientY - touch1.clientY
+      );
+      
+      // Calculate zoom factor based on the change in distance between touches
+      const distanceRatio = newDistance / lastTouchDistanceRef.current;
+      
+      // Pinching in (distance decreasing) should zoom in (decrease window size)
+      // Pinching out (distance increasing) should zoom out (increase window size)
+      const zoomFactor = 1 / distanceRatio;
+      
+      // Calculate new window size with limits
+      const newWindowSize = Math.max(2, Math.min(48, windowSize * zoomFactor));
+      
+      // Only update if there's a meaningful change
+      if (Math.abs(newWindowSize - windowSize) > 0.1) {
+        onWindowSizeChange(newWindowSize);
+      }
+      
+      lastTouchDistanceRef.current = newDistance;
+    }
+  }, [isDragging, windowSize, onCenterTimeChange, onWindowSizeChange]);
+
+  const handleTouchEnd = useCallback(() => {
+    setIsDragging(false);
+    dragStartXRef.current = null;
+    dragStartTimeRef.current = null;
+    lastTouchDistanceRef.current = null;
+  }, []);
+
   const handleWheel = useCallback((e: WheelEvent) => {
     e.preventDefault();
     
@@ -147,12 +217,19 @@ export default function Timelines({
     const container = containerRef.current;
     if (!container) return;
 
+    // Prevent default for touch move events to avoid page scrolling
+    const preventTouchDefault = (e: TouchEvent) => e.preventDefault();
+
     // Add wheel event listener with passive: false to ensure preventDefault works
     container.addEventListener('wheel', handleWheel, { passive: false });
     
-    // Clean up the event listener on unmount
+    // Add touch event listeners with passive: false to ensure preventDefault works
+    container.addEventListener('touchmove', preventTouchDefault, { passive: false });
+    
+    // Clean up the event listeners on unmount
     return () => {
       container.removeEventListener('wheel', handleWheel);
+      container.removeEventListener('touchmove', preventTouchDefault);
     };
   }, [handleWheel]);
 
@@ -165,7 +242,11 @@ export default function Timelines({
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseLeave}
-      style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
+      style={{ cursor: isDragging ? 'grabbing' : 'grab', touchAction: 'none' }}
     >
       {timezones.map((timezone) => {
         const localCenterTime = new TZDate(centerTime, timezone);
