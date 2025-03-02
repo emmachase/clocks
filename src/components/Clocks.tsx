@@ -34,7 +34,7 @@ interface TimezonesProps {
 export default function Clocks({ timezones, time, ...props }: TimezonesProps & React.HTMLProps<HTMLDivElement>) { 
   return (
     <div {...props}>
-      <div className="grid h-full gap-4 md:grid-cols-2 lg:grid-cols-3 content-between">
+      <div className="grid h-full gap-4 grid-cols-[repeat(auto-fill,minmax(240px,1fr))] content-start ">
         {timezones.map((timezone) => {
           const utcOffset = getUTCOffset(timezone, time);
           

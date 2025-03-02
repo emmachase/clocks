@@ -179,7 +179,7 @@ const DayNightTerminator = ({
   }, [time, width, height, resolution, longitudeRange]);
 
   return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} {...props}>
+    <svg viewBox={`0 0 ${width} ${height}`} {...props}>
       <path
         d={pathData}
         fill={fillColor}

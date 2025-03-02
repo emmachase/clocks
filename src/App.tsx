@@ -148,14 +148,14 @@ function App() {
       </div>
       
       <div className="flex space-x-4 flex-col 2xl:flex-row space-y-4 2xl:space-y-0">
-        <div className="flex items-start justify-center relative h-[41vh] overflow-hidden">
-          <World className="fill-primary/20 w-auto h-[50vh]" /> 
+        <div className="flex items-start justify-center relative overflow-hidden">
+          <World className="fill-primary/20 w-auto 2xl:w-[45rem] max-h-[24rem]" /> 
           {/* aspect ratio: 2:1 */}
-          <div className="absolute inset-0 h-[50vh]">
+          <div className="absolute inset-0 max-h-[24rem]">
             <DayNightTerminator
               width={720}
               height={360}
-              className="w-full h-[50vh]"
+              className="w-full max-h-[24rem]"
               time={displayRealTime ? realTime : centerTime}
               fillColor="#000"
               fillOpacity={0.2}
@@ -167,7 +167,7 @@ function App() {
             <CityMarkers
               width={720}
               height={360}
-              className="w-full h-[50vh]"
+              className="w-full max-h-[24rem]"
               cities={cities}
             />
           </div>

@@ -37,7 +37,7 @@ const CityMarkers: React.FC<CityMarkersProps & React.SVGProps<SVGSVGElement>> = 
   };
 
   return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} {...props}>
+    <svg viewBox={`0 0 ${width} ${height}`} {...props}>
       {cities.filter(city => city !== undefined).map((city, index) => {
         if (!city) return null;
         
@@ -48,9 +48,8 @@ const CityMarkers: React.FC<CityMarkersProps & React.SVGProps<SVGSVGElement>> = 
             <circle
               cx={x}
               cy={y}
-              r={5}
-              fill="#FF5722"
-              stroke="#FFF"
+              r={3}
+              fill="oklch(0.645 0.246 16.439)"
               strokeWidth={1.5}
               opacity={0.8}
             />
