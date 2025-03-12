@@ -1,5 +1,5 @@
-import { format } from 'date-fns';
-import { TZDate } from '@date-fns/tz';
+import { format } from "date-fns";
+import { TZDate } from "@date-fns/tz";
 
 function isPM(date: Date) {
   return date.getHours() >= 12;
@@ -11,10 +11,10 @@ function isPM(date: Date) {
  */
 function getUTCOffset(timezone: string, date: Date): string {
   // Return empty string for UTC timezone
-  if (timezone === 'UTC') {
-    return '';
+  if (timezone === "UTC") {
+    return "";
   }
-  
+
   const tzDate = new TZDate(date, timezone);
   // Get offset in minutes
   const offsetInMinutes = tzDate.getTimezoneOffset();
@@ -22,8 +22,10 @@ function getUTCOffset(timezone: string, date: Date): string {
   const hours = Math.abs(Math.floor(offsetInMinutes / 60));
   const minutes = Math.abs(offsetInMinutes % 60);
   // Format with sign and padding
-  const sign = offsetInMinutes <= 0 ? '+' : '-'; // Note: getTimezoneOffset returns negative for timezones ahead of UTC
-  return `${sign}${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+  const sign = offsetInMinutes <= 0 ? "+" : "-"; // Note: getTimezoneOffset returns negative for timezones ahead of UTC
+  return `${sign}${hours.toString().padStart(2, "0")}:${minutes
+    .toString()
+    .padStart(2, "0")}`;
 }
 
 interface TimezonesProps {
@@ -31,22 +33,38 @@ interface TimezonesProps {
   time: Date;
 }
 
-export default function Clocks({ timezones, time, ...props }: TimezonesProps & React.HTMLProps<HTMLDivElement>) { 
+export default function Clocks({
+  timezones,
+  time,
+  ...props
+}: TimezonesProps & React.HTMLProps<HTMLDivElement>) {
   return (
     <div {...props}>
       <div className="grid h-full gap-4 grid-cols-[repeat(auto-fill,minmax(240px,1fr))] content-start ">
         {timezones.map((timezone) => {
           const utcOffset = getUTCOffset(timezone, time);
-          
+
           return (
-            <div key={timezone} className="p-3 border rounded-md bg-card shadow-sm text-center md:text-left">
+            <div
+              key={timezone}
+              className="p-3 border rounded-md bg-card shadow-sm text-center md:text-left"
+            >
               <div className="text-sm text-muted-foreground">
-                {timezone} {utcOffset && <span className="text-xs font-mono">(UTC{utcOffset})</span>}
+                {timezone}{" "}
+                {utcOffset && (
+                  <span className="text-xs font-mono">(UTC{utcOffset})</span>
+                )}
               </div>
               <div className="text-2xl font-mono">
-                {format(new TZDate(time, timezone), 'hh:mm:ss')}
-                {" "}
-                {isPM(new TZDate(time, timezone)) ? <span className="text-amber-600">PM</span> : <span className="text-blue-500">AM</span>}
+                {format(new TZDate(time, timezone), "hh:mm:ss")}{" "}
+                {isPM(new TZDate(time, timezone)) ? (
+                  <span className="text-amber-600">PM</span>
+                ) : (
+                  <span className="text-blue-500">AM</span>
+                )}
+              </div>
+              <div className="text-xl text-muted-foreground font-mono">
+                {format(new TZDate(time, timezone), "MMM d, yyyy")}
               </div>
             </div>
           );

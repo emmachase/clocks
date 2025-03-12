@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Gradient definition -->
+  <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="userSpaceOnUse">
+    <stop offset="0%" stop-color="#8CE3FF" />
+    <stop offset="100%" stop-color="#5B9AFF" />
+  </linearGradient>
+  
+  <!-- Dark background circle -->
+  <circle cx="100" cy="100" r="100" fill="#001820" />
+  
+  <!-- Define the mask -->
+  <mask id="clockMask">
+    <!-- White shapes for the mask -->
+    <!-- Outer circle -->
+    <circle cx="100" cy="100" r="80" stroke="white" stroke-width="3" fill="none" />
+    
+    <!-- Inner circle (same thickness) -->
+    <circle cx="100" cy="100" r="75" stroke="white" stroke-width="3" fill="none" />
+    
+    <!-- Hour markers (excluding 12, 3, 6, 9) -->
+    <rect x="97" y="25" width="6" height="15" rx="2" fill="white" transform="rotate(30 100 100)" />
+    <rect x="97" y="25" width="6" height="15" rx="2" fill="white" transform="rotate(60 100 100)" />
+    <rect x="97" y="25" width="6" height="15" rx="2" fill="white" transform="rotate(120 100 100)" />
+    <rect x="97" y="25" width="6" height="15" rx="2" fill="white" transform="rotate(150 100 100)" />
+    <rect x="97" y="25" width="6" height="15" rx="2" fill="white" transform="rotate(210 100 100)" />
+    <rect x="97" y="25" width="6" height="15" rx="2" fill="white" transform="rotate(240 100 100)" />
+    <rect x="97" y="25" width="6" height="15" rx="2" fill="white" transform="rotate(300 100 100)" />
+    <rect x="97" y="25" width="6" height="15" rx="2" fill="white" transform="rotate(330 100 100)" />
+    
+    <!-- Square hour markers at 3, 6, 9, 12 with outlines -->
+    <rect x="30" y="95" width="10" height="10" rx="2" fill="none" stroke="white" stroke-width="2" />
+    <rect x="95" y="30" width="10" height="10" rx="2" fill="none" stroke="white" stroke-width="2" />
+    <rect x="160" y="95" width="10" height="10" rx="2" fill="none" stroke="white" stroke-width="2" />
+    <rect x="95" y="160" width="10" height="10" rx="2" fill="none" stroke="white" stroke-width="2" />
+    
+    <!-- Clock hands using transforms -->
+    <g transform="rotate(45 100 100)">
+      <!-- Hour hand -->
+      <line x1="100" y1="100" x2="100" y2="60" stroke="white" stroke-width="10" stroke-linecap="round" />
+      <!-- Small protrusion on opposite side -->
+      <line x1="100" y1="100" x2="100" y2="110" stroke="white" stroke-width="10" stroke-linecap="round" />
+    </g>
+    
+    <g transform="rotate(105 100 100)">
+      <!-- Minute hand -->
+      <line x1="100" y1="100" x2="100" y2="55" stroke="white" stroke-width="8" stroke-linecap="round" />
+      <!-- Small protrusion on opposite side -->
+      <line x1="100" y1="100" x2="100" y2="110" stroke="white" stroke-width="8" stroke-linecap="round" />
+    </g>
+    
+    <!-- Center dot (outlined) -->
+    <circle cx="100" cy="100" r="4" fill="black" stroke="white" stroke-width="2" />
+  </mask>
+  
+  <!-- Apply the gradient with the mask -->
+  <rect width="200" height="200" fill="url(#blueGradient)" mask="url(#clockMask)" />
+</svg>
