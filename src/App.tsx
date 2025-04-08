@@ -64,6 +64,7 @@ function App() {
     getCity("Tokyo", "Japan", "Tokyo"),
     getCity("Sydney", "Australia", "New South Wales"),
     getCity("New Delhi", "India", "Delhi"),
+    getCity("Beijing", "China", "Beijing"),
   ];
 
   const timezones = [
